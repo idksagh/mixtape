@@ -137,7 +137,7 @@ function removeTrack(id){tracks=tracks.filter(t=>t.id!==id);playlists.forEach(p=
 function selectTrack(id){currentTrack=tracks.find(t=>t.id===id);if(!currentTrack)return;document.getElementById('playerTitle').textContent=currentTrack.title;document.getElementById('playerSub').textContent=currentTrack.service+' · нажми ▶, чтобы открыть';document.getElementById('miniPlayer').style.display='flex';}
 
 
-function playerAction(){
+async function playerAction(){
   if(!currentTrack){
     toast('Сначала выбери трек в библиотеке');
     return;
@@ -162,6 +162,7 @@ function playerAction(){
     const m=url.match(/open\.spotify\.com\/(track|album|playlist|episode|show)\/([a-zA-Z0-9]+)/);
     if(m) embed='https://open.spotify.com/embed/'+m[1]+'/'+m[2];
   
+
 }else if(t.service==='SoundCloud'){
   try{
     const sc=new URL(url);
@@ -171,21 +172,36 @@ function playerAction(){
     const first=parts[0]||'';
 
     if(host==='on.soundcloud.com' && parts.length>=1){
-      embed='https://w.soundcloud.com/player/?url='+
-        encodeURIComponent(url)+'&auto_play=false&visual=false';
+      const response=await fetch(
+        'https://soundcloud.com/oembed?format=json&url='+
+        encodeURIComponent(url)
+      );
+      if(!response.ok) throw new Error('oEmbed failed');
+
+      const data=await response.json();
+      const parsed=new DOMParser().parseFromString(
+        data.html||'','text/html'
+      );
+      const frame=parsed.querySelector('iframe');
+
+      if(!frame||!frame.src) throw new Error('No embed');
+      embed=frame.src;
+      embed+=(embed.includes('?')?'&':'?')+
+        'auto_play=false&visual=false';
+
     }else if(host==='soundcloud.com' && parts.length>=2 &&
       !/^(search|discover|stream|you|upload|settings|messages|notifications)$/i.test(first)){
       url='https://soundcloud.com'+path;
       embed='https://w.soundcloud.com/player/?url='+
-        encodeURIComponent(url)+'&auto_play=false&visual=false';
+        encodeURIComponent(url)+
+        '&auto_play=false&visual=false';
     }else{
       toast('Нужна ссылка на конкретный трек SoundCloud');
       openTrackSource(t.id);
       return;
     }
   }catch(e){
-    toast('Проверь ссылку SoundCloud');
-    openTrackSource(t.id);
+    toast('Не удалось загрузить плеер SoundCloud. Проверь доступность трека.');
     return;
   }
   }else if(t.service==='Яндекс Музыка'||t.service==='Yandex Music'){
