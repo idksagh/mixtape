@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101014">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MIXTAPE">
+<link rel="manifest" href="manifest.json">
+<title>MIXTAPE — твоя музыка</title>
+<style>
+:root{color-scheme:dark;--bg:#101014;--panel:#1b1b22;--panel2:#24242d;--text:#f7f7fb;--muted:#9b9ba9;--accent:#b9f36a;--line:#30303a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 0 calc(86px + env(safe-area-inset-bottom));}
+header{padding:22px 20px 12px;display:flex;justify-content:space-between;align-items:center} .brand{font-size:22px;font-weight:900;letter-spacing:2px}.brand span{color:var(--accent)} .avatar{width:36px;height:36px;border-radius:50%;background:var(--panel2);display:grid;place-items:center}
+main{padding:0 18px}.greeting{font-size:28px;font-weight:800;margin:12px 2px 5px}.sub{color:var(--muted);font-size:14px;margin:0 2px 20px}
+.search{display:flex;gap:10px;background:var(--panel);border:1px solid var(--line);padding:13px 15px;border-radius:16px;margin-bottom:22px}.search input{background:none;border:0;outline:0;color:var(--text);width:100%;font-size:15px}
+.sectionhead{display:flex;justify-content:space-between;align-items:center;margin:22px 2px 12px}.sectionhead h2{font-size:18px;margin:0}.smallbtn{color:var(--accent);background:none;border:0;font-weight:700;font-size:13px}
+.quickgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.quick{min-height:76px;border-radius:15px;padding:14px;background:linear-gradient(135deg,#292c31,#1a1a20);display:flex;align-items:center;gap:12px;font-weight:700}.qicon{font-size:23px}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.tile{min-width:0}.cover{width:100%;aspect-ratio:1;border-radius:14px;display:grid;place-items:center;font-size:40px;overflow:hidden;background:linear-gradient(135deg,#555, #222)}.cover.c1{background:linear-gradient(135deg,#6d4aff,#18152d)}.cover.c2{background:linear-gradient(135deg,#f08c57,#422c55)}.cover.c3{background:linear-gradient(135deg,#b8ee6a,#1d3826)}.cover.c4{background:linear-gradient(135deg,#4eb6bf,#152c40)}.tile strong{display:block;margin-top:8px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tile small{color:var(--muted);display:block;margin-top:4px}
+.tracklist{display:flex;flex-direction:column;gap:2px}.track{display:flex;align-items:center;gap:12px;padding:10px 2px;border-radius:12px}.trackart{width:48px;height:48px;border-radius:10px;display:grid;place-items:center;flex-shrink:0;font-size:21px;background:var(--panel2)}.trackinfo{min-width:0;flex:1}.trackinfo strong{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.trackinfo small{display:block;color:var(--muted);font-size:12px;margin-top:4px}.source{font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:4px 5px}.dots{background:none;border:0;color:var(--muted);font-size:22px;padding:6px}
+.nav{position:fixed;z-index:5;bottom:0;left:0;right:0;padding:10px 10px calc(10px + env(safe-area-inset-bottom));background:rgba(16,16,20,.94);backdrop-filter:blur(20px);border-top:1px solid var(--line);display:flex;justify-content:space-around}.nav button{background:none;border:0;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;min-width:58px}.nav button.active{color:var(--accent)}.nav .ni{font-size:21px}
+.player{position:fixed;bottom:calc(72px + env(safe-area-inset-bottom));left:10px;right:10px;border:1px solid #3a3a43;background:#27272f;border-radius:14px;padding:9px 12px;display:flex;align-items:center;gap:10px;z-index:4;box-shadow:0 6px 24px #0005}.playerart{width:40px;height:40px;border-radius:9px;background:linear-gradient(135deg,#b9f36a,#25472b);display:grid;place-items:center}.playerinfo{min-width:0;flex:1}.playerinfo strong{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.playerinfo small{color:var(--muted);font-size:11px}.playbtn{border:0;background:var(--accent);color:#151515;border-radius:50%;width:36px;height:36px;font-size:16px}
+.page{display:none}.page.active{display:block}.empty{padding:25px 10px;text-align:center;color:var(--muted);line-height:1.5}.pillrow{display:flex;gap:8px;overflow:auto;margin:0 0 16px}.pill{white-space:nowrap;border:1px solid var(--line);color:var(--muted);background:transparent;border-radius:100px;padding:8px 13px}.pill.active{background:var(--accent);border-color:var(--accent);color:#151515;font-weight:700}
+.primary{border:0;background:var(--accent);color:#171717;padding:12px 15px;border-radius:12px;font-weight:800}.secondary{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:11px 14px;border-radius:12px}
+input,button{font-family:inherit}.modalback{position:fixed;inset:0;background:#0009;display:none;align-items:flex-end;z-index:10}.modalback.show{display:flex}.modal{width:100%;background:#202027;border-radius:22px 22px 0 0;padding:22px 20px calc(25px + env(safe-area-inset-bottom));}.modal h2{margin:0 0 12px}.modal input,.modal select{width:100%;background:#121217;border:1px solid var(--line);border-radius:12px;padding:13px;color:var(--text);margin:7px 0 12px}.modalactions{display:flex;gap:10px}.modalactions button{flex:1}
+.toast{position:fixed;top:calc(15px + env(safe-area-inset-top));left:15px;right:15px;background:#2b2b33;padding:13px;border-radius:12px;z-index:20;display:none;font-size:13px}
+
+/* MIXTAPE redesign: editorial Apple Music feel + discovery-oriented Yandex Music patterns */
+:root{--bg:#0b0b0e;--panel:#1a1a20;--panel2:#25252d;--text:#f7f7f9;--muted:#a0a0ab;--accent:#ff496a;--line:#303037}
+body{background:radial-gradient(ellipse at 95% -10%,#28202c 0,transparent 34%),var(--bg);padding-bottom:calc(116px + env(safe-area-inset-bottom))}
+header{padding:calc(17px + env(safe-area-inset-top)) 21px 13px}.brand{font-size:20px;letter-spacing:1.5px}.brand span{color:#ff496a}.avatar{background:#222229;border:1px solid #383840;color:#ff496a}
+main{padding:0 20px}.home-top{display:flex;align-items:center;justify-content:space-between;margin:12px 0 17px}.eyebrow{font-size:10px;font-weight:800;letter-spacing:1.5px;color:#a4a4af;margin:0 0 7px}.greeting{font-size:31px;letter-spacing:-1.1px;font-weight:850;margin:0}.profile-button{width:38px;height:38px;border:1px solid #3a3a43;border-radius:50%;background:linear-gradient(135deg,#3a3a43,#1a1a20);color:#ff496a}
+.search{border:0;background:#202026;border-radius:14px;padding:14px 15px;margin:0 0 24px}.search input{font-size:15px}.sectionhead{margin:27px 1px 14px}.sectionhead h2{font-size:21px;letter-spacing:-.5px;font-weight:800}.smallbtn{color:#ff6680}
+.wave-card{min-height:205px;border-radius:22px;position:relative;overflow:hidden;display:flex;align-items:center;padding:21px;background:linear-gradient(120deg,#3b1b3c 0%,#792b54 48%,#ef5b55 100%);box-shadow:0 12px 35px #c33b551b}.wave-card:before{content:"";position:absolute;width:220px;height:220px;border-radius:50%;right:-48px;top:-75px;background:radial-gradient(circle at 35% 35%,#ffdb95,#ff7b7a 42%,#a52966 72%);opacity:.9}.wave-card:after{content:"";position:absolute;width:170px;height:170px;border:1px solid #ffffff2b;border-radius:50%;right:-18px;bottom:-105px;box-shadow:0 0 0 20px #ffffff08,0 0 0 42px #ffffff08}.wave-copy{position:relative;z-index:1;max-width:78%}.eyebrow.light{color:#ffe0e4}.wave-copy h2{font-size:30px;line-height:1.05;margin:5px 0 8px;letter-spacing:-1px}.wave-copy p{font-size:12px;line-height:1.4;color:#ffe7e9;margin:0 0 15px;max-width:230px}.wave-play{border:0;border-radius:100px;background:#fff;color:#28202a;font-weight:800;padding:10px 15px;font-size:12px}.wave-orb{position:absolute;right:21px;bottom:25px;width:70px;height:70px;border-radius:50%;display:grid;place-items:center;background:#ffffff17;border:1px solid #ffffff55;color:white;font-size:29px;backdrop-filter:blur(8px)}.wave-spark{position:absolute;right:29px;top:18px;font-size:18px;color:#ffe1b8}
+.recent-row{display:flex;gap:12px;overflow-x:auto;padding:1px 1px 5px;scrollbar-width:none}.recent-row::-webkit-scrollbar,.horizontal-tiles::-webkit-scrollbar{display:none}.recent-item{flex:0 0 118px;min-width:0}.recent-cover{aspect-ratio:1;width:100%;border-radius:13px;display:grid;place-items:center;font-size:34px;box-shadow:inset 0 0 0 1px #ffffff0d}.recent-item strong{display:block;font-size:13px;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.recent-item small{color:var(--muted);font-size:11px;display:block;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.horizontal-tiles{display:flex;gap:13px;overflow-x:auto;scrollbar-width:none;padding:1px 1px 5px}.horizontal-tiles .tile{flex:0 0 142px}.horizontal-tiles .cover{border-radius:15px}.horizontal-tiles .tile strong{font-size:13px}.cover{border-radius:15px}.cover.c1{background:linear-gradient(145deg,#7e5cff,#261c56)}.cover.c2{background:linear-gradient(145deg,#ff9568,#67385f)}.cover.c3{background:linear-gradient(145deg,#d7ef70,#23593d)}.cover.c4{background:linear-gradient(145deg,#5ed2d4,#263c73)}
+.moods{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mood{min-height:85px;border:0;border-radius:15px;padding:13px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;font-size:22px;color:white;text-align:left}.mood span{font-size:13px;font-weight:750}.mood-pink{background:linear-gradient(135deg,#a13e68,#5e244e)}.mood-blue{background:linear-gradient(135deg,#335d9b,#202b54)}.mood-orange{background:linear-gradient(135deg,#d77b3c,#783b31)}.mood-green{background:linear-gradient(135deg,#498d71,#1e4d48)}
+.services-strip{margin:24px 0 5px;padding:15px;border:1px solid #303039;background:#17171d;border-radius:16px;display:flex;align-items:center;justify-content:space-between;gap:12px}.services-strip strong,.services-strip small{display:block}.services-strip strong{font-size:14px}.services-strip small{font-size:11px;color:var(--muted);margin-top:5px}
+.track{padding:10px 3px}.trackart{border-radius:11px}.trackinfo strong{font-size:14px}.nav{bottom:0;padding:10px 9px calc(11px + env(safe-area-inset-bottom));background:rgba(14,14,17,.94);border-top:1px solid #292930}.nav button{font-size:10px;gap:5px}.nav button.active{color:#ff496a}.nav .ni{font-size:21px}.player{bottom:calc(74px + env(safe-area-inset-bottom));background:#29292f;border-color:#44444d;border-radius:15px;padding:8px 10px}.playerart{background:linear-gradient(135deg,#ff496a,#572747)}.playbtn{background:#ff496a;color:white}
+.primary{background:#ff496a;color:white}.pill.active{background:#ff496a;border-color:#ff496a;color:white}.smallbtn:active,.primary:active,.wave-play:active{opacity:.75}
+@media(min-width:600px){body{max-width:520px;margin:0 auto;border-left:1px solid #222;border-right:1px solid #222;min-height:100vh}.nav{left:50%;right:auto;transform:translateX(-50%);width:min(520px,100%)}.player{left:calc(50% - 250px);right:auto;width:500px}}
+
+</style>
+</head>
+<body>
+<header><div class="brand">MIX<span>TAPE</span></div><div class="avatar">♫</div></header>
+<main>
+<section id="home" class="page active">
+<div class="home-top"><div><div class="eyebrow">ТВОЯ МУЗЫКА · ТВОЙ ДЕНЬ</div><div class="greeting">Слушать сейчас</div></div><button class="profile-button" onclick="showPage('settings')">●</button></div>
+<div class="search"><span>⌕</span><input id="globalSearch" placeholder="Артисты, треки, альбомы" oninput="searchAll(this.value)"></div>
+<div id="searchResults"></div>
+<div id="homeContent">
+<div class="wave-card" onclick="openService('Yandex Music')"><div class="wave-orb"><span>♫</span></div><div class="wave-copy"><div class="eyebrow light">ПОДБОРКА ДЛЯ ТЕБЯ</div><h2>Твоя волна</h2><p>Музыка под настроение — открой в Яндекс Музыке</p><button class="wave-play" onclick="event.stopPropagation();openService('Yandex Music')">▶ Слушать</button></div><div class="wave-spark">✳</div></div>
+<div class="sectionhead"><h2>Недавно слушали</h2><button class="smallbtn" onclick="showPage('library')">Все →</button></div>
+<div class="recent-row" id="homeRecent"></div>
+<div class="sectionhead"><h2>Твои подборки</h2><button class="smallbtn" onclick="showPage('playlists')">Все →</button></div>
+<div class="horizontal-tiles" id="homePlaylists"></div>
+<div class="mood-section"><div class="sectionhead"><h2>Что по настроению?</h2></div><div class="moods"><button class="mood mood-pink" onclick="searchService('Яндекс Музыка','музыка для настроения')">✨<span>Поднять настроение</span></button><button class="mood mood-blue" onclick="searchService('Яндекс Музыка','спокойная музыка')">🌙<span>Расслабиться</span></button><button class="mood mood-orange" onclick="searchService('Яндекс Музыка','энергичная музыка')">⚡<span>Зарядиться</span></button><button class="mood mood-green" onclick="searchService('Яндекс Музыка','новая музыка')">🌱<span>Открыть новое</span></button></div></div>
+<div class="sectionhead"><h2>Моя библиотека</h2><button class="smallbtn" onclick="showPage('library')">Все →</button></div>
+<div id="homeTracks" class="tracklist"></div>
+<div class="services-strip"><div><strong>Музыка везде</strong><small>Три сервиса в одной библиотеке</small></div><button class="secondary" onclick="showPage('settings')">Сервисы</button></div>
+</div>
+</section>
+<section id="library" class="page">
+<div class="greeting">Моя музыка</div><p class="sub">Сохраняй ссылки на треки из разных сервисов.</p>
+<div class="pillrow" id="filters"><button class="pill active" onclick="setFilter('Все',this)">Все</button><button class="pill" onclick="setFilter('Яндекс Музыка',this)">Яндекс</button><button class="pill" onclick="setFilter('Spotify',this)">Spotify</button><button class="pill" onclick="setFilter('SoundCloud',this)">SoundCloud</button><button class="pill" onclick="setFilter('Избранное',this)">♡ Избранное</button></div>
+<div class="search"><span>⌕</span><input id="librarySearch" placeholder="Поиск в твоей библиотеке" oninput="renderLibrary()"></div>
+<div class="sectionhead"><h2>Сохранённые треки</h2><button class="smallbtn" onclick="openAddTrack()">+ Добавить</button></div>
+<div id="libraryTracks" class="tracklist"></div>
+</section>
+<section id="playlists" class="page">
+<div class="greeting">Плейлисты</div><p class="sub">Создавай свои подборки из разных источников.</p>
+<button class="primary" onclick="openCreatePlaylist()">＋ Новый плейлист</button>
+<div class="sectionhead"><h2>Твои подборки</h2></div><div class="tiles" id="playlistGrid"></div>
+</section>
+<section id="settings" class="page">
+<div class="greeting">Настройки</div><p class="sub">MIXTAPE — бесплатный прототип для личного использования.</p>
+<div class="sectionhead"><h2>Подключённые сервисы</h2></div>
+<div class="tracklist">
+<div class="track"><div class="trackart">Я</div><div class="trackinfo"><strong>Яндекс Музыка</strong><small>Твоя подписка Яндекс Плюс</small></div><button class="secondary" onclick="openService('Yandex Music')">Открыть</button></div>
+<div class="track"><div class="trackart">◉</div><div class="trackinfo"><strong>Spotify</strong><small>Бесплатный аккаунт</small></div><button class="secondary" onclick="openService('Spotify')">Открыть</button></div>
+<div class="track"><div class="trackart">☁</div><div class="trackinfo"><strong>SoundCloud</strong><small>Бесплатный аккаунт</small></div><button class="secondary" onclick="openService('SoundCloud')">Открыть</button></div>
+</div>
+<div class="sectionhead"><h2>Данные</h2></div>
+<p class="sub">Библиотека и плейлисты хранятся локально в браузере на этом устройстве. В этой версии вход через аккаунты сервисов не подключён. Добавляй ссылки вручную; данные останутся в этом браузере.</p>
+<button class="secondary" onclick="exportData()">Экспортировать библиотеку</button>
+<button class="secondary" onclick="loadDemoData()" style="margin:8px 0 0">Загрузить примеры для проверки</button>
+<button class="secondary" onclick="document.getElementById('importFile').click()" style="margin-left:6px">Импортировать</button>
+<input id="importFile" type="file" accept="application/json,.json" style="display:none" onchange="importData(this.files[0]);this.value=''">
+<button class="secondary" onclick="confirmReset()" style="margin:8px 0 0">Сбросить данные</button>
+</section>
+</main>
+<div class="player" id="miniPlayer"><div class="playerart">♫</div><div class="playerinfo"><strong id="playerTitle">Выбери свой трек</strong><small id="playerSub">Плеер-переход к источнику</small></div><button class="playbtn" onclick="playerAction()">▶</button></div>
+<nav class="nav">
+<button class="active" onclick="showPage('home',this)"><span class="ni">⌂</span>Главная</button>
+<button onclick="showPage('library',this)"><span class="ni">♫</span>Моя музыка</button>
+<button onclick="showPage('playlists',this)"><span class="ni">▤</span>Подборки</button>
+<button onclick="showPage('settings',this)"><span class="ni">⚙</span>Настройки</button>
+</nav>
+<div class="modalback" id="modalback" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const services={
+"Яндекс Музыка":"https://music.yandex.ru/",
+"Spotify":"https://open.spotify.com/",
+"SoundCloud":"https://soundcloud.com/"
+};
+function safeLoad(key,fallback){try{const raw=localStorage.getItem(key);return raw?JSON.parse(raw):fallback}catch(e){return fallback}}
+let tracks=safeLoad('mixtape_tracks',[]);
+let playlists=safeLoad('mixtape_playlists',[
+{id:1,name:"В дорогу",emoji:"🚗",desc:"Музыка для поездок",trackIds:[]},
+{id:2,name:"Вечерний вайб",emoji:"🌙",desc:"Спокойный вечер",trackIds:[]},
+{id:3,name:"На повторе",emoji:"↻",desc:"Любимые треки",trackIds:[]},
+{id:4,name:"Открытия",emoji:"✨",desc:"Найти новое",trackIds:[]}
+]);
+let currentFilter='Все',currentTrack=null;
+function save(){try{localStorage.setItem('mixtape_tracks',JSON.stringify(tracks));localStorage.setItem('mixtape_playlists',JSON.stringify(playlists));}catch(e){toast('Браузер не разрешил сохранить данные. Попробуй другой режим браузера.')}}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function showPage(id,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');else{let b=[...document.querySelectorAll('.nav button')].find(x=>x.getAttribute('onclick').includes("'"+id+"'"));if(b)b.classList.add('active')}if(id==='library')renderLibrary();if(id==='playlists')renderPlaylists();}
+function coverClass(i){return 'c'+((i%4)+1)}
+function renderHome(){document.getElementById('homePlaylists').innerHTML=playlists.slice(0,6).map((p,i)=>`<div class="tile" onclick="openPlaylist(${p.id})"><div class="cover ${coverClass(i)}">${esc(p.emoji||'♫')}</div><strong>${esc(p.name)}</strong><small>${p.trackIds.length} треков</small></div>`).join('');document.getElementById('homeTracks').innerHTML=tracks.slice(0,5).map(trackHTML).join('');document.getElementById('homeRecent').innerHTML=tracks.length?tracks.slice(0,5).map((t,i)=>`<div class="recent-item" onclick="selectTrack(${t.id})"><div class="recent-cover ${coverClass(i)}">${t.service==='Spotify'?'◉':t.service==='SoundCloud'?'☁':'♫'}</div><strong>${esc(t.title)}</strong><small>${esc(t.artist)}</small></div>`).join(''):'<div class="empty">Здесь появятся твои треки после добавления.</div>'; }
+function trackHTML(t){return `<div class="track"><div class="trackart" onclick="selectTrack(${t.id})">${t.service==='Spotify'?'◉':t.service==='SoundCloud'?'☁':'Я'}</div><div class="trackinfo" onclick="selectTrack(${t.id})"><strong>${esc(t.title)}</strong><small>${esc(t.artist)} · ${esc(t.service)}</small></div><button class="dots" onclick="trackMenu(${t.id})">⋯</button></div>`}
+function renderLibrary(){let q=(document.getElementById('librarySearch')?.value||'').toLowerCase();let list=tracks.filter(t=>(currentFilter==='Все'||(currentFilter==='Избранное'?t.liked:t.service===currentFilter))&&(`${t.title} ${t.artist} ${t.service}`).toLowerCase().includes(q));document.getElementById('libraryTracks').innerHTML=list.length?list.map(trackHTML).join():'<div class="empty">Пока ничего не найдено.<br>Добавь трек по ссылке из сервиса.</div>';}
+function renderPlaylists(){document.getElementById('playlistGrid').innerHTML=playlists.map((p,i)=>`<div class="tile" onclick="openPlaylist(${p.id})"><div class="cover ${coverClass(i)}">${esc(p.emoji||'♫')}</div><strong>${esc(p.name)}</strong><small>${p.trackIds.length} треков</small></div>`).join('')}
+function setFilter(f,b){currentFilter=f;document.querySelectorAll('.pill').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderLibrary()}
+function openAddTrack(){document.getElementById('modal').innerHTML=`<h2>Добавить трек</h2><p class="sub">Вставь ссылку на трек из одного из сервисов.</p><label>Название трека</label><input id="newTitle" placeholder="Например, My favourite song"><label>Исполнитель</label><input id="newArtist" placeholder="Имя исполнителя"><label>Сервис</label><select id="newService"><option>Яндекс Музыка</option><option>Spotify</option><option>SoundCloud</option></select><label>Ссылка на трек</label><input id="newUrl" placeholder="https://…"><div class="modalactions"><button class="secondary" onclick="closeModal()">Отмена</button><button class="primary" onclick="addTrack()">Сохранить</button></div>`;openModal()}
+function addTrack(){let title=document.getElementById('newTitle').value.trim(),artist=document.getElementById('newArtist').value.trim(),service=document.getElementById('newService').value,url=document.getElementById('newUrl').value.trim();if(!title){toast('Введи название трека');return}if(url&&!/^https?:\/\//i.test(url)){toast('Ссылка должна начинаться с https://');return}tracks.unshift({id:Date.now(),title,artist:artist||'Неизвестный исполнитель',service,url:url||services[service],liked:false,playlistIds:[]});save();closeModal();renderHome();renderLibrary();toast('Трек сохранён в библиотеку')}
+function openCreatePlaylist(){document.getElementById('modal').innerHTML=`<h2>Новый плейлист</h2><label>Название</label><input id="playlistName" placeholder="Например, Ночная дорога"><label>Эмодзи обложки</label><input id="playlistEmoji" placeholder="🌙" maxlength="4"><div class="modalactions"><button class="secondary" onclick="closeModal()">Отмена</button><button class="primary" onclick="createPlaylist()">Создать</button></div>`;openModal()}
+function createPlaylist(){let name=document.getElementById('playlistName').value.trim();if(!name){toast('Укажи название');return}playlists.unshift({id:Date.now(),name,emoji:document.getElementById('playlistEmoji').value||'♫',desc:'Моя подборка',trackIds:[]});save();closeModal();renderHome();renderPlaylists();toast('Плейлист создан')}
+function openPlaylist(id){let p=playlists.find(x=>x.id===id);if(!p)return;let list=tracks.filter(t=>p.trackIds.includes(t.id));document.getElementById('modal').innerHTML=`<h2>${esc(p.emoji)} ${esc(p.name)}</h2><p class="sub">${esc(p.desc||'Твоя подборка')}</p><button class="primary" onclick="addToPlaylist(${p.id})">＋ Добавить треки</button><div class="sectionhead"><h2>Треки · ${list.length}</h2></div><div class="tracklist">${list.length?list.map(trackHTML).join(''):'<div class="empty">В плейлисте пока нет треков.</div>'}</div><div class="modalactions" style="margin-top:16px"><button class="secondary" onclick="closeModal()">Закрыть</button><button class="secondary" onclick="deletePlaylist(${p.id})">Удалить</button></div>`;openModal()}
+function addToPlaylist(pid){let p=playlists.find(x=>x.id===pid);let available=tracks.filter(t=>!p.trackIds.includes(t.id));document.getElementById('modal').innerHTML=`<h2>Добавить в «${esc(p.name)}»</h2>${available.length?available.map(t=>`<label style="display:flex;gap:10px;align-items:center;padding:8px 0"><input type="checkbox" value="${t.id}" style="width:auto;margin:0"> <span>${esc(t.title)} <small style="color:var(--muted)">· ${esc(t.service)}</small></span></label>`).join(''):'<p class="sub">Нет доступных треков. Сначала добавь треки в библиотеку.</p>'}<div class="modalactions"><button class="secondary" onclick="closeModal()">Отмена</button><button class="primary" onclick="savePlaylistTracks(${pid})">Сохранить</button></div>`}
+function savePlaylistTracks(pid){let p=playlists.find(x=>x.id===pid);document.querySelectorAll('#modal input[type=checkbox]:checked').forEach(x=>{let id=Number(x.value);if(!p.trackIds.includes(id))p.trackIds.push(id)});save();renderHome();renderPlaylists();openPlaylist(pid);toast('Плейлист обновлён')}
+function deletePlaylist(id){if(!confirm('Удалить плейлист?'))return;playlists=playlists.filter(p=>p.id!==id);save();closeModal();renderHome();renderPlaylists();toast('Плейлист удалён')}
+function trackMenu(id){let t=tracks.find(x=>x.id===id);document.getElementById('modal').innerHTML=`<h2>${esc(t.title)}</h2><p class="sub">${esc(t.artist)} · ${esc(t.service)}</p><button class="primary" style="width:100%;margin:5px 0" onclick="selectTrack(${id});closeModal()">Выбрать трек</button><button class="secondary" style="width:100%;margin:5px 0" onclick="openTrackSource(${id})">Открыть в ${esc(t.service)}</button><button class="secondary" style="width:100%;margin:5px 0" onclick="toggleFavorite(${id})">${t.liked?'Убрать из избранного':'♡ Добавить в избранное'}</button><button class="secondary" style="width:100%;margin:5px 0" onclick="removeTrack(${id})">Удалить из библиотеки</button><button class="secondary" style="width:100%;margin:5px 0" onclick="closeModal()">Закрыть</button>`;openModal()}
+function removeTrack(id){tracks=tracks.filter(t=>t.id!==id);playlists.forEach(p=>p.trackIds=p.trackIds.filter(x=>x!==id));save();closeModal();renderHome();renderLibrary();renderPlaylists();toast('Трек удалён')}
+function selectTrack(id){currentTrack=tracks.find(t=>t.id===id);if(!currentTrack)return;document.getElementById('playerTitle').textContent=currentTrack.title;document.getElementById('playerSub').textContent=currentTrack.service+' · нажми ▶, чтобы открыть';document.getElementById('miniPlayer').style.display='flex';}
+function playerAction(){if(currentTrack)openTrackSource(currentTrack.id);else toast('Сначала выбери трек в библиотеке')}
+function openTrackSource(id){let t=tracks.find(x=>x.id===id);if(!t)return;window.open(t.url||services[t.service],'_blank','noopener');}
+function openService(name){window.open(services[name],'_blank','noopener')}
+function searchAll(value){let q=value.trim().toLowerCase();let box=document.getElementById('searchResults');if(!q){box.innerHTML='';document.getElementById('homeContent').style.display='block';return}document.getElementById('homeContent').style.display='none';let list=tracks.filter(t=>(t.title+' '+t.artist+' '+t.service).toLowerCase().includes(q));box.innerHTML=`<div class="sectionhead"><h2>В твоей библиотеке</h2><button class="smallbtn" onclick="openAddTrack()">+ Добавить</button></div>${list.length?list.map(trackHTML).join(''):'<div class="empty">В локальной библиотеке совпадений нет.<br>Добавь ссылку на трек вручную.</div>'}<div class="sectionhead"><h2>Искать в сервисах</h2></div><div class="tracklist">${Object.keys(services).map(s=>`<div class="track"><div class="trackart">${s==='Spotify'?'◉':s==='SoundCloud'?'☁':'Я'}</div><div class="trackinfo"><strong>${s}</strong><small>Открыть поиск в сервисе</small></div><button class="secondary" onclick="searchService('${s}',document.getElementById('globalSearch').value)">Искать</button></div>`).join('')}</div>`}
+function searchService(s,q){let urls={"Spotify":"https://open.spotify.com/search/","Яндекс Музыка":"https://music.yandex.ru/search?text=","SoundCloud":"https://soundcloud.com/search?q="};window.open(urls[s]+encodeURIComponent(q),'_blank','noopener')}
+function openModal(){document.getElementById('modalback').classList.add('show')}function closeModal(){document.getElementById('modalback').classList.remove('show')}
+function toast(s){let e=document.getElementById('toast');e.textContent=s;e.style.display='block';setTimeout(()=>e.style.display='none',2400)}
+function exportData(){let blob=new Blob([JSON.stringify({tracks,playlists},null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mixtape-library.json';a.click();URL.revokeObjectURL(a.href);toast('Экспорт подготовлен')}
+function toggleFavorite(id){let t=tracks.find(x=>x.id===id);if(!t)return;t.liked=!t.liked;save();closeModal();renderHome();renderLibrary();toast(t.liked?'Добавлено в избранное':'Убрано из избранного')}
+function loadDemoData(){if(tracks.some(t=>t.demo)){toast('Примеры уже добавлены');return}const demo=[{id:Date.now()+1,title:'Демо: Lo-fi для учёбы',artist:'Пример для проверки',service:'Яндекс Музыка',url:'https://music.yandex.ru/search?text='+encodeURIComponent('lofi для учёбы'),liked:true,demo:true},{id:Date.now()+2,title:'Демо: Музыка в дорогу',artist:'Пример для проверки',service:'Spotify',url:'https://open.spotify.com/search/'+encodeURIComponent('road trip music'),liked:false,demo:true},{id:Date.now()+3,title:'Демо: Спокойный вечер',artist:'Пример для проверки',service:'SoundCloud',url:'https://soundcloud.com/search?q='+encodeURIComponent('chill evening'),liked:false,demo:true}];tracks=demo.concat(tracks);save();renderHome();renderLibrary();toast('Добавлены 3 демонстрационные ссылки. Они ведут в поиск сервиса.')}
+function importData(file){if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const data=JSON.parse(reader.result);if(!Array.isArray(data.tracks)||!Array.isArray(data.playlists))throw new Error('format');tracks=data.tracks;playlists=data.playlists;save();renderHome();renderLibrary();renderPlaylists();toast('Библиотека импортирована')}catch(e){toast('Не удалось импортировать. Выбери JSON, экспортированный из MIXTAPE.')}};reader.readAsText(file)}
+function confirmReset(){if(confirm('Удалить сохранённую библиотеку и плейлисты на этом устройстве?')){localStorage.removeItem('mixtape_tracks');localStorage.removeItem('mixtape_playlists');location.reload()}}
+renderHome();renderLibrary();renderPlaylists();
+</script>
+</body>
+</html>

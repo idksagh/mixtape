@@ -1,0 +1,10 @@
+{
+  "name": "MIXTAPE — твоя музыка",
+  "short_name": "MIXTAPE",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b0b0e",
+  "theme_color": "#ff496a",
+  "description": "Общая музыкальная библиотека и плейлисты"
+}
