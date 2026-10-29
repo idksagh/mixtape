@@ -162,8 +162,26 @@ function playerAction(){
     const m=url.match(/open\.spotify\.com\/(track|album|playlist|episode|show)\/([a-zA-Z0-9]+)/);
     if(m) embed='https://open.spotify.com/embed/'+m[1]+'/'+m[2];
   }else if(t.service==='SoundCloud'){
-    url=url.replace(/^https?:\/\/m\.soundcloud\.com\//,'https://soundcloud.com/').split('?')[0].replace(/\/+$/,'');
-    embed='https://w.soundcloud.com/player/?url='+encodeURIComponent(url)+'&auto_play=true&visual=false';
+  try{
+    const sc=new URL(url);
+    const host=sc.hostname.toLowerCase().replace(/^www\./,'').replace(/^m\./,'');
+    const path=sc.pathname.replace(/\/+$/,'');
+    const first=path.split('/').filter(Boolean)[0]||'';
+    if((host==='soundcloud.com'||host==='on.soundcloud.com') &&
+       path.split('/').filter(Boolean).length>=2 &&
+       !/^(search|discover|stream|you|upload|settings|messages|notifications)$/i.test(first)){
+      url='https://soundcloud.com'+path;
+      embed='https://w.soundcloud.com/player/?url='+encodeURIComponent(url)+'&auto_play=false&visual=false';
+    }else{
+      toast('Нужна прямая ссылка на трек SoundCloud, не поиск или профиль');
+      openTrackSource(t.id);
+      return;
+    }
+  }catch(e){
+    toast('Проверь ссылку SoundCloud');
+    openTrackSource(t.id);
+    return;
+  }
   }else if(t.service==='Яндекс Музыка'||t.service==='Yandex Music'){
     const m=url.match(/music\.yandex\.[^/]+\/(?:album\/(\d+)\/track\/(\d+)|track\/(\d+))/);
     if(m){
