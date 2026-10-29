@@ -135,7 +135,43 @@ function deletePlaylist(id){if(!confirm('Удалить плейлист?'))retu
 function trackMenu(id){let t=tracks.find(x=>x.id===id);document.getElementById('modal').innerHTML=`<h2>${esc(t.title)}</h2><p class="sub">${esc(t.artist)} · ${esc(t.service)}</p><button class="primary" style="width:100%;margin:5px 0" onclick="selectTrack(${id});closeModal()">Выбрать трек</button><button class="secondary" style="width:100%;margin:5px 0" onclick="openTrackSource(${id})">Открыть в ${esc(t.service)}</button><button class="secondary" style="width:100%;margin:5px 0" onclick="toggleFavorite(${id})">${t.liked?'Убрать из избранного':'♡ Добавить в избранное'}</button><button class="secondary" style="width:100%;margin:5px 0" onclick="removeTrack(${id})">Удалить из библиотеки</button><button class="secondary" style="width:100%;margin:5px 0" onclick="closeModal()">Закрыть</button>`;openModal()}
 function removeTrack(id){tracks=tracks.filter(t=>t.id!==id);playlists.forEach(p=>p.trackIds=p.trackIds.filter(x=>x!==id));save();closeModal();renderHome();renderLibrary();renderPlaylists();toast('Трек удалён')}
 function selectTrack(id){currentTrack=tracks.find(t=>t.id===id);if(!currentTrack)return;document.getElementById('playerTitle').textContent=currentTrack.title;document.getElementById('playerSub').textContent=currentTrack.service+' · нажми ▶, чтобы открыть';document.getElementById('miniPlayer').style.display='flex';}
-function playerAction(){if(currentTrack)openTrackSource(currentTrack.id);else toast('Сначала выбери трек в библиотеке')}
+
+function playerAction(){
+  if(!currentTrack){
+    toast('Сначала выбери трек в библиотеке');
+    return;
+  }
+  const t=currentTrack;
+  let url=t.url||services[t.service];
+  let embed='';
+  if(t.service==='Spotify'){
+    const m=url.match(/open\.spotify\.com\/(track|album|playlist|episode|show)\/([a-zA-Z0-9]+)/);
+    if(m) embed='https://open.spotify.com/embed/'+m[1]+'/'+m[2];
+  }else if(t.service==='SoundCloud'){
+    embed='https://w.soundcloud.com/player/?url='+encodeURIComponent(url)+'&auto_play=true&visual=true';
+  }else if(t.service==='Яндекс Музыка'){
+    const m=url.match(/music\.yandex\.[^/]+\/(?:album\/(\d+)\/track\/(\d+)|track\/(\d+)/);
+    if(m){
+      const trackId=m[2]||m[3];
+      const albumId=m[1];
+      embed='https://music.yandex.ru/iframe/#track/'+trackId+'/'+(albumId||'');
+    }
+  }
+  if(!embed){
+    openTrackSource(t.id);
+    return;
+  }
+  document.getElementById('modal').innerHTML=
+    '<h2>'+esc(t.title)+'</h2>'+
+    '<p>'+esc(t.artist||'')+'</p>'+
+    '<iframe src="'+embed.replace(/"/g,'&quot;')+
+    '" width="100%" height="300" frameborder="0" '+
+    'allow="autoplay; encrypted-media; fullscreen" '+
+    'allowfullscreen style="border:0;border-radius:12px"></iframe>'+
+    '<button class="secondary" style="width:100%;margin-top:12px" onclick="closeModal()">Закрыть</button>';
+  openModal();
+}
+
 function openTrackSource(id){let t=tracks.find(x=>x.id===id);if(!t)return;window.open(t.url||services[t.service],'_blank','noopener');}
 function openService(name){window.open(services[name],'_blank','noopener')}
 function searchAll(value){let q=value.trim().toLowerCase();let box=document.getElementById('searchResults');if(!q){box.innerHTML='';document.getElementById('homeContent').style.display='block';return}document.getElementById('homeContent').style.display='none';let list=tracks.filter(t=>(t.title+' '+t.artist+' '+t.service).toLowerCase().includes(q));box.innerHTML=`<div class="sectionhead"><h2>В твоей библиотеке</h2><button class="smallbtn" onclick="openAddTrack()">+ Добавить</button></div>${list.length?list.map(trackHTML).join(''):'<div class="empty">В локальной библиотеке совпадений нет.<br>Добавь ссылку на трек вручную.</div>'}<div class="sectionhead"><h2>Искать в сервисах</h2></div><div class="tracklist">${Object.keys(services).map(s=>`<div class="track"><div class="trackart">${s==='Spotify'?'◉':s==='SoundCloud'?'☁':'Я'}</div><div class="trackinfo"><strong>${s}</strong><small>Открыть поиск в сервисе</small></div><button class="secondary" onclick="searchService('${s}',document.getElementById('globalSearch').value)">Искать</button></div>`).join('')}</div>`}
