@@ -150,7 +150,7 @@ function playerAction(){
   }else if(t.service==='SoundCloud'){
     embed='https://w.soundcloud.com/player/?url='+encodeURIComponent(url)+'&auto_play=true&visual=true';
   }else if(t.service==='Яндекс Музыка'){
-    const m=url.match(/music\.yandex\.[^/]+\/(?:album\/(\d+)\/track\/(\d+)|track\/(\d+)/);
+    const m=url.match(/music\.yandex\.[^/]+\/(?:album\/(\d+)\/track\/(\d+)|track\/(\d+))/);
     if(m){
       const trackId=m[2]||m[3];
       const albumId=m[1];
